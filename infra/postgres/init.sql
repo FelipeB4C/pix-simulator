@@ -1,0 +1,2 @@
+CREATE DATABASE pix_api;
+CREATE DATABASE pix_processor;

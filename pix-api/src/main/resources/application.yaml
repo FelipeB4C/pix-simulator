@@ -27,3 +27,30 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    template:
+      mandatory: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: pix-api-status
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+        spring.json.value.default.type: dev.pixsim.contracts.PixEventoV1
+        spring.json.trusted.packages: dev.pixsim.contracts
+        spring.json.use.type.headers: false
+        listener:
+          ack-mode: record
