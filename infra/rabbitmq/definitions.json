@@ -1,0 +1,21 @@
+{
+  "vhosts": [{ "name": "/" }],
+  "exchanges": [
+    { "name": "pix.comandos",     "vhost": "/", "type": "direct", "durable": true, "auto_delete": false, "internal": false, "arguments": {} },
+    { "name": "pix.comandos.dlx", "vhost": "/", "type": "direct", "durable": true, "auto_delete": false, "internal": false, "arguments": {} }
+  ],
+  "queues": [
+    {
+      "name": "pix.processar", "vhost": "/", "durable": true, "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "pix.comandos.dlx",
+        "x-dead-letter-routing-key": "processar.dlq"
+      }
+    },
+    { "name": "pix.processar.dlq", "vhost": "/", "durable": true, "auto_delete": false, "arguments": {} }
+  ],
+  "bindings": [
+    { "source": "pix.comandos",     "vhost": "/", "destination": "pix.processar",     "destination_type": "queue", "routing_key": "processar",     "arguments": {} },
+    { "source": "pix.comandos.dlx", "vhost": "/", "destination": "pix.processar.dlq", "destination_type": "queue", "routing_key": "processar.dlq", "arguments": {} }
+  ]
+}
