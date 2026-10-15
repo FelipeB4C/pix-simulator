@@ -31,8 +31,8 @@ spring:
   rabbitmq:
     host: localhost
     port: 5672
-    username: guest
-    password: guest
+    username: pix
+    password: pix
     publisher-confirm-type: correlated
     publisher-returns: true
     template:

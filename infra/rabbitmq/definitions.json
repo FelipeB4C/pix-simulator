@@ -1,5 +1,22 @@
 {
+  "users": [
+    {
+      "name": "pix",
+      "password_hash": "qbRrnKsiFmq7cL4c9rMjCEE+kMXIGWFXEh61HoxMeMCjWq0a",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": ["administrator"]
+    }
+  ],
   "vhosts": [{ "name": "/" }],
+  "permissions": [
+    {
+      "user": "pix",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
   "exchanges": [
     { "name": "pix.comandos",     "vhost": "/", "type": "direct", "durable": true, "auto_delete": false, "internal": false, "arguments": {} },
     { "name": "pix.comandos.dlx", "vhost": "/", "type": "direct", "durable": true, "auto_delete": false, "internal": false, "arguments": {} }
