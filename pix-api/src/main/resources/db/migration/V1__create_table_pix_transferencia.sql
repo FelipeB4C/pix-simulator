@@ -1,16 +1,18 @@
-CREATE TABLE pix_transferencia (
-                                   id                UUID PRIMARY KEY,
-                                   idempotency_key   UUID           NOT NULL UNIQUE,
-                                   hash_requisicao   VARCHAR(64)    NOT NULL,
-                                   conta_origem_id   UUID           NOT NULL,
-                                   conta_destino_id  UUID,
-                                   chave_destino     VARCHAR(140)   NOT NULL,
-                                   valor             NUMERIC(15,2)  NOT NULL CHECK (valor > 0),
-                                   descricao         VARCHAR(140),
-                                   status            VARCHAR(20)    NOT NULL,
-                                   motivo_rejeicao   VARCHAR(40),
-                                   criado_em         TIMESTAMPTZ    NOT NULL DEFAULT now(),
-                                   atualizado_em     TIMESTAMPTZ    NOT NULL DEFAULT now()
+CREATE TABLE pix_transfer (
+                              id                 UUID PRIMARY KEY,
+                              idempotency_key    UUID           NOT NULL UNIQUE,
+                              request_hash       VARCHAR(64)    NOT NULL,
+                              origin_account_id  UUID           NOT NULL,
+                              target_account_id  UUID,
+                              target_key         VARCHAR(140)   NOT NULL,
+                              amount             NUMERIC(15,2)  NOT NULL CHECK (amount > 0),
+                              description        VARCHAR(140),
+                              status             VARCHAR(20)    NOT NULL,
+                              rejection_reason   VARCHAR(40),
+                              created_at         TIMESTAMPTZ    NOT NULL DEFAULT now(),
+                              updated_at         TIMESTAMPTZ    NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_transf_origem  ON pix_transferencia (conta_origem_id, criado_em DESC);
-CREATE INDEX idx_transf_destino ON pix_transferencia (conta_destino_id, criado_em DESC);
+CREATE INDEX idx_pix_transfer_origin_account_created_at
+    ON pix_transfer (origin_account_id, created_at DESC);
+CREATE INDEX idx_pix_transfer_target_account_created_at
+    ON pix_transfer (target_account_id, created_at DESC);

@@ -1,37 +1,38 @@
-CREATE TABLE conta (
-                       id       UUID PRIMARY KEY,
-                       titular  VARCHAR(120)  NOT NULL,
-                       saldo    NUMERIC(15,2) NOT NULL CHECK (saldo >= 0)
+CREATE TABLE account (
+                         id      UUID PRIMARY KEY,
+                         holder  VARCHAR(120)  NOT NULL,
+                         balance NUMERIC(15,2) NOT NULL CHECK (balance >= 0)
 );
 
-CREATE TABLE chave_pix (
-                           chave    VARCHAR(140) PRIMARY KEY,
-                           tipo     VARCHAR(12)  NOT NULL,
-                           conta_id UUID         NOT NULL REFERENCES conta(id)
+CREATE TABLE pix_key (
+                         key_value VARCHAR(140) PRIMARY KEY,
+                         key_type  VARCHAR(12)  NOT NULL,
+                         account_id UUID       NOT NULL REFERENCES account(id)
 );
 
-CREATE TABLE transferencia_processada (
-                                          transferencia_id UUID PRIMARY KEY,
-                                          resultado        VARCHAR(20) NOT NULL,
-                                          processada_em    TIMESTAMPTZ NOT NULL DEFAULT now()
+CREATE TABLE processed_transfer (
+                                    transfer_id UUID PRIMARY KEY,
+                                    result      VARCHAR(20) NOT NULL,
+                                    processed_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE lancamento (
-                            id               UUID PRIMARY KEY,
-                            transferencia_id UUID          NOT NULL,
-                            conta_id         UUID          NOT NULL REFERENCES conta(id),
-                            tipo             VARCHAR(8)    NOT NULL,
-                            valor            NUMERIC(15,2) NOT NULL,
-                            criado_em        TIMESTAMPTZ   NOT NULL DEFAULT now(),
-                            UNIQUE (transferencia_id, tipo)
+CREATE TABLE ledger_entry (
+                              id         UUID PRIMARY KEY,
+                              transfer_id UUID          NOT NULL,
+                              account_id UUID          NOT NULL REFERENCES account(id),
+                              entry_type VARCHAR(8)    NOT NULL,
+                              amount     NUMERIC(15,2) NOT NULL,
+                              created_at TIMESTAMPTZ   NOT NULL DEFAULT now(),
+                              UNIQUE (transfer_id, entry_type)
 );
 
-CREATE TABLE outbox_evento (
-                               id            UUID PRIMARY KEY,
-                               topico        VARCHAR(100) NOT NULL,
-                               chave         VARCHAR(100) NOT NULL,
-                               payload       JSONB        NOT NULL,
-                               criado_em     TIMESTAMPTZ  NOT NULL DEFAULT now(),
-                               publicado_em  TIMESTAMPTZ
+CREATE TABLE outbox_event (
+                              id           UUID PRIMARY KEY,
+                              topic        VARCHAR(100) NOT NULL,
+                              message_key  VARCHAR(100) NOT NULL,
+                              payload      JSONB        NOT NULL,
+                              created_at   TIMESTAMPTZ  NOT NULL DEFAULT now(),
+                              published_at TIMESTAMPTZ
 );
-CREATE INDEX idx_outbox_pendentes ON outbox_evento (criado_em) WHERE publicado_em IS NULL;
+CREATE INDEX idx_outbox_event_unpublished_created_at
+    ON outbox_event (created_at) WHERE published_at IS NULL;
