@@ -1,4 +1,4 @@
-package dev.pixsim.api.domain.entities;
+package dev.pixsim.api.adapter.out.persistence;
 
 import dev.pixsim.api.domain.enums.RejectionReason;
 import dev.pixsim.api.domain.enums.StatusTransfer;
@@ -20,7 +20,7 @@ import java.util.UUID;
                 @Index(name = "idx_pix_transfer_target_account_created_at", columnList = "target_account_id, created_at")
         }
 )
-public class PixTransfer {
+public class PixTransferEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
