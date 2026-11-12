@@ -1,4 +1,4 @@
-package dev.pixsim.api.adapter.in.web.dto;
+package dev.pixsim.api.web.dto;
 
 import java.math.BigDecimal;
 

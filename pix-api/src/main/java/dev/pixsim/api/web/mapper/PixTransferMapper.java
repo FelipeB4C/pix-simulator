@@ -1,8 +1,8 @@
-package dev.pixsim.api.adapter.in.web.mapper;
+package dev.pixsim.api.web.mapper;
 
-import dev.pixsim.api.adapter.in.web.dto.PixRequestDTO;
-import dev.pixsim.api.adapter.in.web.dto.PixResponseDTO;
-import dev.pixsim.api.adapter.out.persistence.PixTransferEntity;
+import dev.pixsim.api.web.dto.PixRequestDTO;
+import dev.pixsim.api.web.dto.PixResponseDTO;
+import dev.pixsim.api.domain.model.PixTransfer;
 import dev.pixsim.api.domain.enums.StatusTransfer;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,11 +15,11 @@ public interface PixTransferMapper {
 
 
     @Mapping(source = "accountDestiny", target = "targetKey")
-    PixTransferEntity toEntity(PixRequestDTO request);
+    PixTransfer toEntity(PixRequestDTO request);
 
     @Mapping(source = "id", target = "id", qualifiedByName = "uuidToString")
     @Mapping(source = "status", target = "status", qualifiedByName = "statusToString")
-    PixResponseDTO toResponseDTO(PixTransferEntity entity);
+    PixResponseDTO toResponseDTO(PixTransfer entity);
 
     @Named("uuidToString")
     default String uuidToString(UUID id) {
