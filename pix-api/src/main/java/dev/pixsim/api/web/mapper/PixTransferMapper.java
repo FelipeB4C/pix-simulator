@@ -16,7 +16,8 @@ public interface PixTransferMapper {
 
     @Mapping(source = "request.accountDestiny", target = "targetKey")
     @Mapping(source = "requestHash", target = "requestHash")
-    PixTransfer toEntity(PixRequestDTO request, String requestHash);
+    @Mapping(source = "idempotencyKey", target = "idempotencyKey")
+    PixTransfer toEntity(PixRequestDTO request, String requestHash, UUID idempotencyKey);
 
     @Mapping(source = "id", target = "id", qualifiedByName = "uuidToString")
     @Mapping(source = "status", target = "status", qualifiedByName = "statusToString")

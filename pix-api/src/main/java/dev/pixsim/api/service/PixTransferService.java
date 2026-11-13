@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
+import java.util.UUID;
 
 @Service
 public class PixTransferService {
@@ -25,17 +26,16 @@ public class PixTransferService {
 
     public PixTransferService(
             PixTransferRepository repository,
-            PixTransferMapper mapper,
-            ObjectMapper objectMapper
+            PixTransferMapper mapper
     ) {
         this.repository = repository;
         this.mapper = mapper;
-        this.objectMapper = objectMapper;
+        this.objectMapper = new ObjectMapper();
     }
 
     @Transactional
-    public PixResponseDTO createPixTransfer(PixRequestDTO request) {
-        PixTransfer pixEntity = mapper.toEntity(request, hashRequest(request));
+    public PixResponseDTO createPixTransfer(PixRequestDTO request, UUID idempotencyKey) {
+        PixTransfer pixEntity = mapper.toEntity(request, hashRequest(request), idempotencyKey);
         pixEntity.changeStatus(StatusTransfer.PROCESSING);
         PixTransfer pixCreated = repository.save(pixEntity);
         return mapper.toResponseDTO(pixCreated);

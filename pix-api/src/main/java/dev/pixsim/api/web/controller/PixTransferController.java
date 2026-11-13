@@ -5,13 +5,11 @@ import dev.pixsim.api.web.dto.PixRequestDTO;
 import dev.pixsim.api.web.dto.PixResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/pix")
@@ -23,10 +21,11 @@ public class PixTransferController {
         this.service = service;
     }
 
-    @PostMapping("/transfer")
+    @PostMapping
     public ResponseEntity<PixResponseDTO> createPixTransfer(@RequestBody @Valid PixRequestDTO request,
+                                                            @RequestHeader("Idempotency-Key") UUID idempotencyKey,
                                                             UriComponentsBuilder uriComponentsBuilder) {
-        PixResponseDTO pixResponse = service.createPixTransfer(request);
+        PixResponseDTO pixResponse = service.createPixTransfer(request, idempotencyKey);
         URI uri = uriComponentsBuilder.path("/users/{id}").buildAndExpand(pixResponse.id()).toUri();
         return ResponseEntity.created(uri).body(pixResponse);
     }
