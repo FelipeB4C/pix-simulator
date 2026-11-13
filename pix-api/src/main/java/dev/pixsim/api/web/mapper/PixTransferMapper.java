@@ -14,8 +14,9 @@ import java.util.UUID;
 public interface PixTransferMapper {
 
 
-    @Mapping(source = "accountDestiny", target = "targetKey")
-    PixTransfer toEntity(PixRequestDTO request);
+    @Mapping(source = "request.accountDestiny", target = "targetKey")
+    @Mapping(source = "requestHash", target = "requestHash")
+    PixTransfer toEntity(PixRequestDTO request, String requestHash);
 
     @Mapping(source = "id", target = "id", qualifiedByName = "uuidToString")
     @Mapping(source = "status", target = "status", qualifiedByName = "statusToString")
