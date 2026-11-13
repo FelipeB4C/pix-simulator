@@ -5,6 +5,8 @@ import dev.pixsim.api.domain.enums.StatusTransfer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
@@ -12,7 +14,9 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @Table(
         name = "pix_transfer",
         indexes = {
@@ -72,5 +76,9 @@ public class PixTransfer {
     @PreUpdate
     private void onUpdate() {
         this.updatedAt = Instant.now();
+    }
+
+    public void changeStatus(StatusTransfer status) {
+        this.status = status;
     }
 }

@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface PixTransferRepository extends JpaRepository<UUID, PixTransfer> {
+public interface PixTransferRepository extends JpaRepository<PixTransfer, UUID> {
 }
