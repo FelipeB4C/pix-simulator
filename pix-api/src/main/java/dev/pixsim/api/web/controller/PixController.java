@@ -13,11 +13,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/pix")
-public class PixTransferController {
+public class PixController {
 
     private final PixTransferService service;
 
-    public PixTransferController(PixTransferService service) {
+    public PixController(PixTransferService service) {
         this.service = service;
     }
 
@@ -28,6 +28,11 @@ public class PixTransferController {
         PixResponseDTO pixResponse = service.createPixTransfer(request, idempotencyKey);
         URI uri = uriComponentsBuilder.path("/users/{id}").buildAndExpand(pixResponse.id()).toUri();
         return ResponseEntity.created(uri).body(pixResponse);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PixResponseDTO> consultPixStatusTransfer(@PathVariable UUID id){
+        return ResponseEntity.ok(service.getPixStatusTransfer(id));
     }
 
 }

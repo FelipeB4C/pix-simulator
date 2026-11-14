@@ -8,6 +8,7 @@ import dev.pixsim.api.repository.PixTransferRepository;
 import dev.pixsim.api.web.dto.PixRequestDTO;
 import dev.pixsim.api.web.dto.PixResponseDTO;
 import dev.pixsim.api.web.mapper.PixTransferMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +41,16 @@ public class PixTransferService {
         PixTransfer pixCreated = repository.save(pixEntity);
         return mapper.toResponseDTO(pixCreated);
     }
+
+    @Transactional(readOnly = true)
+    public PixResponseDTO getPixStatusTransfer(UUID transferId) {
+        PixTransfer pix = repository.findById(transferId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "PIX transfer not found: " + transferId
+                ));
+        return mapper.toResponseDTO(pix);
+    }
+
 
     private String hashRequest(PixRequestDTO request) {
         CanonicalPixRequest canonicalRequest = new CanonicalPixRequest(
