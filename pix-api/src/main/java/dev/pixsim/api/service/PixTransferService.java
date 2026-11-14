@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.pixsim.api.domain.enums.StatusTransfer;
 import dev.pixsim.api.domain.model.PixTransfer;
+import dev.pixsim.api.exception.IdempotencyKeyConflictException;
 import dev.pixsim.api.repository.PixTransferRepository;
 import dev.pixsim.api.web.dto.PixRequestDTO;
 import dev.pixsim.api.web.dto.PixResponseDTO;
@@ -36,7 +37,20 @@ public class PixTransferService {
 
     @Transactional
     public PixResponseDTO createPixTransfer(PixRequestDTO request, UUID idempotencyKey) {
-        PixTransfer pixEntity = mapper.toEntity(request, hashRequest(request), idempotencyKey);
+        String hashRequestBody = hashRequest(request);
+
+        var existingTransfer = repository.findByIdempotencyKey(idempotencyKey);
+        if (existingTransfer.isPresent()) {
+            PixTransfer pix = existingTransfer.get();
+            if (!pix.getRequestHash().equals(hashRequestBody)) {
+                throw new IdempotencyKeyConflictException(
+                        "Idempotency Key already used with different body"
+                );
+            }
+            return mapper.toResponseDTO(pix);
+        }
+
+        PixTransfer pixEntity = mapper.toEntity(request, hashRequestBody, idempotencyKey);
         pixEntity.changeStatus(StatusTransfer.PROCESSING);
         PixTransfer pixCreated = repository.save(pixEntity);
         return mapper.toResponseDTO(pixCreated);
@@ -51,7 +65,6 @@ public class PixTransferService {
         return mapper.toResponseDTO(pix);
     }
 
-
     private String hashRequest(PixRequestDTO request) {
         CanonicalPixRequest canonicalRequest = new CanonicalPixRequest(
                 request.originAccountId().trim(),
@@ -65,7 +78,7 @@ public class PixTransferService {
             byte[] hash = MessageDigest.getInstance("SHA-256").digest(content);
             return HexFormat.of().formatHex(hash);
         } catch (JsonProcessingException | NoSuchAlgorithmException e) {
-            throw new IllegalStateException("Não foi possível gerar o hash da requisição PIX", e);
+            throw new IllegalStateException("Could not generate the PIX request hash", e);
         }
     }
 
